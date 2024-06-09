@@ -1,0 +1,113 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+void Link(int k, int R1, int R2, int *Parent, int *W)
+{
+    if (W[R1] < W[R2]) // у кого меньше вес
+    {
+        Parent[R1] = R2; // подвешиваем R1 к R2
+        W[R2] = W[R2] + W[R1];
+    }
+    else
+    {
+        Parent[R2] = R1; // подвешиваем R2 к R1
+        W[R1] = W[R1] + W[R2];
+    }
+}
+
+int getRep(int i, int* Parent)
+{
+    if (Parent[i] != i)  Parent[i] = getRep(Parent[i], Parent);
+    else return Parent[i];
+}
+
+bool sameSet(int i_1, int i_2, int *Parent)
+{
+    return (getRep(i_1, Parent) == getRep(i_2, Parent));
+}
+
+int Kruscal(int k, int n, int** Edge, int *Parent, int *W)
+{
+    int Cost = 0;
+    int i = 0;
+    int r1, r2;
+
+    while (i <= n)
+    {
+        r1 = getRep(Edge[i][0], Parent);
+        r2 = getRep(Edge[i][1], Parent);
+
+        if (r1 != r2)
+        {
+            cout << Edge[i][0] << " " << Edge[i][1] << endl;
+            Cost = Cost + Edge[i][2];
+            Link(k, r1, r2, Parent, W);
+        }
+
+        i++;
+    }
+
+    return Cost;
+}
+
+int main()
+{
+    int n, k, R1, R2, R3;
+
+    cin >> n >> k;
+
+    int* Parent = new int[n]; // массив ссылок на предков
+    int* W = new int[n]; // количество вершин в поддереве с корнем i
+    int** Edge = new int* [k];
+    for (int i = 0; i < k; i++) Edge[i] = new int [i + 1];
+
+    for (int i = 0; i < n; i++)
+    {
+        Parent[i] = i;
+        W[i] = i;
+    }
+
+    for (int i = 0; i < k; i++)
+    {
+        cin >> R1 >> R2 >> R3;
+
+        Edge[i][0] = R1;
+        Edge[i][1] = R2;
+        Edge[i][2] = R3;
+    }
+
+    for (int i = 0; i < k - 1; i++)
+    {
+        for (int j = i + 1; j < k; j++)
+        {
+            if (Edge[i][2] > Edge[j][2])
+            {
+                R1 = Edge[i][0];
+                R2 = Edge[i][1];
+                R3 = Edge[i][2];
+
+                Edge[i][0] = Edge[j][0];
+                Edge[i][1] = Edge[j][1];
+                Edge[i][2] = Edge[j][2];
+
+                Edge[j][0] = R1;
+                Edge[j][1] = R2;
+                Edge[j][2] = R3;
+            }
+        }
+    }
+
+    cout << endl;
+    for (int i = 0; i < k; i++)
+    {
+        cout << Edge[i][0] << " " << Edge[i][1] << " " << Edge[i][2] << " " << endl;
+    }
+    cout << endl;
+
+    cout << Kruscal(k, n, Edge, Parent, W) << endl;
+
+    system("PAUSE");
+    return 0;
+}
