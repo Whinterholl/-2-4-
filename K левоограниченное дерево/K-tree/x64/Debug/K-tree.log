@@ -1,0 +1,3 @@
+﻿  K-tree.cpp
+D:\Visual project\Пинаев\K-tree\K-tree\KTree.h(77): warning C4715: minLeaves: значение возвращается не при всех путях выполнения
+  K-tree.vcxproj -> D:\Visual project\Пинаев\K-tree\x64\Debug\K-tree.exe
