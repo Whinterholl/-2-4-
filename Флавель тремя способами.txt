@@ -1,0 +1,101 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+struct Node
+{
+    Node* right;
+    int data;
+};
+
+Node* circleStr(int n, Node* first)
+{
+    Node* cur = new Node;
+    first->right = cur;
+    cur->data = n;
+    cur->right = NULL;
+    
+    return cur;
+}
+
+int circleStr_1(int n, int k, Node* cur)
+{
+    for (int i = 1; i < k; i++)
+    {
+        if (cur->data == 0) i--;
+        cur = cur->right;
+    }
+
+    while (cur->data == 0) cur = cur->right;
+
+    if (n != 1) cur->data = 0;
+    else return cur->data;
+
+    circleStr_1(n-1, k, cur->right);
+}
+
+int circleRec(int n, int k)
+{
+    if (n == 1) return 1;
+    else
+    {
+        int p_ = circleRec(n - 1, k);
+        int s = k % n == 0 ? n : k % n; // удаляемый элемент
+
+        return s + p_ > n ? s + p_ - n : s + p_; // просмотр позиции удаляемого элемента
+    }
+}
+
+int circleIter(int n, int k)
+{
+    int p = 1;
+
+    for (int i = 1; i <= n; i++)
+    {
+        int s = k % i == 0 ? i : k % i;
+        p = s + p > i ? s + p - i : s + p;
+    }
+    return p;
+}
+
+int main()
+{
+    setlocale(LC_ALL, "ru");
+
+    ofstream output("input.txt");
+    output.close();
+    ofstream input("input.txt", ios::app);
+
+    int n, step;
+
+    Node* first = new Node;
+    Node* cur = first;;
+    first->right = first;
+    first->data = 1;
+
+    cout << "Введите кол-во: "; cin >> n;
+    cout << "Введите шаг: "; cin >> step;
+
+    for (int i = 1; i <= 1000; i++)
+    {
+        int s;
+        s = circleRec(50, i);
+        input << s << endl;
+    }
+
+    // Структура
+    for (int i = 2; i <= n; i++) cur = circleStr(i, cur);
+    cur->right = first;
+    cur = first;
+
+    cout << "Структура: " << circleStr_1(n, step, cur) << endl;
+
+    // Рекурсия
+    cout << "Рекурсия: " << circleRec(n, step) << endl;
+
+    // Итерация
+    cout << "Итерация: " << circleIter(n, step) << endl;
+    input.close();
+    system("PAUSE");
+}
